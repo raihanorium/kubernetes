@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: raihanorium
+  name: api-service
+  labels:
+    app: api-service
+spec:
+  selector:
+    app: api-service
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080

@@ -1,0 +1,26 @@
+plugins {
+    id 'base'
+    id 'com.github.node-gradle.node' version '7.0.1'
+}
+
+node {
+    download = true
+    nodeProjectDir.set(projectDir)
+}
+
+tasks.register('start') {
+    group = 'react'
+    dependsOn 'npm_run_start'
+}
+
+tasks.named('build') {
+    group = 'react'
+    dependsOn 'npmInstall', 'npm_run_build'
+}
+
+tasks.register('buildDockerImage', Exec) {
+    group = 'react'
+    dependsOn 'build'
+    commandLine = ['docker', 'image', 'rm', '-f', 'raihanorium/kubernetes-web:latest']
+    commandLine = ['docker', 'build', '-t', 'raihanorium/kubernetes-web:latest', '.']
+}

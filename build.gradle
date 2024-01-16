@@ -1,0 +1,16 @@
+tasks.register('deleteNamespace', Exec) {
+    group = 'application'
+    commandLine = ['kubectl', 'delete', 'namespace', 'raihanorium']
+}
+
+tasks.register('createNamespace', Exec) {
+    group = 'application'
+    dependsOn 'deleteNamespace'
+    commandLine = ['kubectl', 'create', 'namespace', 'raihanorium']
+}
+
+tasks.register('deploy', Exec) {
+    group = 'application'
+    dependsOn  'createNamespace', 'api:bootBuildImage', 'web:buildDockerImage'
+    commandLine = ['kubectl', 'apply', '-f', 'k8s']
+}

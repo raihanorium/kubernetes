@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: raihanorium
+  name: api-deployment
+  labels:
+    app: api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-deployment
+  template:
+    metadata:
+      labels:
+        app: api-deployment
+    spec:
+      containers:
+        - name: api
+          image: raihanorium/kubernetes-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
