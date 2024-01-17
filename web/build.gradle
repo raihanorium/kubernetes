@@ -13,9 +13,16 @@ tasks.register('start') {
     dependsOn 'npm_run_start'
 }
 
+tasks.named('clean') {
+    group = 'react'
+    exec {
+        commandLine = ['rm', '-rf', 'build']
+    }
+}
+
 tasks.named('build') {
     group = 'react'
-    dependsOn 'npmInstall', 'npm_run_build'
+    dependsOn 'clean', 'npmInstall', 'npm_run_build'
 }
 
 tasks.register('buildDockerImage', Exec) {
