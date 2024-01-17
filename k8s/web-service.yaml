@@ -7,7 +7,7 @@ metadata:
     app: web-service
 spec:
   selector:
-    app: web-service
+    app: web
   type: ClusterIP
   ports:
     - port: 8090

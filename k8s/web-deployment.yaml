@@ -4,16 +4,16 @@ metadata:
   namespace: raihanorium
   name: web-deployment
   labels:
-    app: web-deployment
+    app: web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: web-deployment
+      app: web
   template:
     metadata:
       labels:
-        app: web-deployment
+        app: web
     spec:
       containers:
         - name: app
