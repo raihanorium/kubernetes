@@ -1,16 +1,33 @@
-tasks.register('deleteNamespace', Exec) {
-    group = 'application'
-    commandLine = ['kubectl', 'delete', 'namespace', 'raihanorium']
-}
-
 tasks.register('createNamespace', Exec) {
     group = 'application'
-    dependsOn 'deleteNamespace'
     commandLine = ['kubectl', 'create', 'namespace', 'raihanorium']
+    ignoreExitValue = true
+}
+
+tasks.register('copyImage', Exec) {
+    group = 'application'
+    dependsOn 'createNamespace', 'api:bootBuildImage', 'web:buildDockerImage'
+    commandLine = ['echo', 'Copying docker images to kubernetes host...']
+    doLast {
+        exec {
+            commandLine = ['sh', '-c', "docker save raihanorium/kubernetes-web:latest | DOCKER_HOST=ssh://${project.property('kubernetes.host.ip')} docker load"]
+        }
+        exec {
+            commandLine = ['sh', '-c', "docker save raihanorium/kubernetes-api:latest | DOCKER_HOST=ssh://${project.property('kubernetes.host.ip')} docker load"]
+        }
+    }
 }
 
 tasks.register('deploy', Exec) {
     group = 'application'
-    dependsOn  'createNamespace', 'api:bootBuildImage', 'web:buildDockerImage'
+    dependsOn 'copyImage'
     commandLine = ['kubectl', 'apply', '-f', 'k8s']
+    doLast {
+        exec {
+            commandLine = ['kubectl', 'rollout', 'restart', '-f', 'k8s/api-deployment.yaml']
+        }
+        exec {
+            commandLine = ['kubectl', 'rollout', 'restart', '-f', 'k8s/web-deployment.yaml']
+        }
+    }
 }
